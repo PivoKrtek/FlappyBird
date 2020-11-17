@@ -4,12 +4,12 @@ namespace FlappyBird
 {
     class Screen
     {
-        public static string[,] StringsMakingScreen { get; set; }
+        public static string[,] StringsMakingScreen { get; set; } // Använd char istället för string.
         public static int XHere { get; set; }
         public static int BirdHere { get; set; }
         public static int FieldHere { get; set; }
                
-        public static void CreateScreen()
+        public static void CreateScreen() // Istället för att referera direkt till Program, se om du kan använda in-parametrar för metoden.
         {
             for (int y = 0; y < Program.HeightOfGameWindow; y++)
             {

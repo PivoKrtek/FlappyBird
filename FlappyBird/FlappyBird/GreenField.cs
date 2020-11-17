@@ -31,7 +31,7 @@ namespace FlappyBird
                 }
             }
         }
-        public static void SetStartPositionOneStepBack()
+        public static void SetStartPositionOneStepBack() // Flytta metoden till Program, då den bara har referenser dit.
         {
 
             Program.Field1.XStartPosition--;
