@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FlappyBird
 {
-    class Highscore
+    class Highscore // Gillar den här klassen. Det syns att du övat på det här :)
     {
         public string Name { get; set; }
         public int Points { get; set; }
