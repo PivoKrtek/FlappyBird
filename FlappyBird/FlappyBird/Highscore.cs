@@ -48,7 +48,7 @@ namespace FlappyBird
             Console.WriteLine("\t\t\t-------------------------------------------");
             int counter = 1;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            foreach (var line in Highscore.HighscoreList)
+            foreach (var line in HighscoreList)
             {
                 Console.WriteLine($"\t\t\t\t{counter}. {line.Name}, {line.Points} poäng.");
                 counter++;
@@ -57,12 +57,12 @@ namespace FlappyBird
             Console.WriteLine("\t\t\t-------------------------------------------");
         }
 
-        public static int SeeIfHighscore()
+        public static int SeeIfHighscore(int point)
         {
             int counter = 0;
-            foreach (var points in Highscore.HighscoreList)
+            foreach (var points in HighscoreList)
             {
-                if (points.Points < Program.Points)
+                if (points.Points < point)
                 { return counter; }
                 counter++;
             }
@@ -79,7 +79,7 @@ namespace FlappyBird
         {
             int counter = 0;
             StreamWriter sw = File.CreateText("flappybirdhighscore.txt");
-            foreach (var line in Highscore.HighscoreList)
+            foreach (var line in HighscoreList)
             {
 
 

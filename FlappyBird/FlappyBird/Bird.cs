@@ -1,35 +1,38 @@
 ﻿namespace FlappyBird
 {
-    class Bird
+    static class Bird
     {
         public static bool Alive { get; set; }
-
-        public static string[,] BirdStrings { get; set; }
-        public static int XStartPosition { get; set; }
+        public static char[,] BirdChars { get; set; }
+        public static int XStartPosition { get; }
         public static int YStartPosition { get; set; }
-        public static int BirdSizeX { get; set; }
-        public static int BirdSizeY { get; set; }
 
-        public static void CreateBird()
+        public const int BirdSizeX = 4;
+
+        public const int BirdSizeY = 3;
+        static Bird()
         {
-            BirdSizeY = 3;
-            BirdSizeX = 4;
-            BirdStrings = new string[BirdSizeY, BirdSizeX];
-            BirdStrings[0, 0] = " ";
-            BirdStrings[0, 1] = "(";
-            BirdStrings[0, 2] = "@";
-            BirdStrings[0, 3] = ">";
-            BirdStrings[1, 0] = "{";
-            BirdStrings[1, 1] = "<";
-            BirdStrings[1, 2] = "D";
-            BirdStrings[1, 3] = " ";
-            BirdStrings[2, 0] = " ";
-            BirdStrings[2, 1] = "\"";
-            BirdStrings[2, 2] = "\"";
-            BirdStrings[2, 3] = " ";
-
+            Alive = true;
+            XStartPosition = 12;
+            YStartPosition = 10;
+            BirdChars = new char[BirdSizeY, BirdSizeX];
+            BirdChars[0, 0] = ' ';
+            BirdChars[0, 1] = '(';
+            BirdChars[0, 2] = '@';
+            BirdChars[0, 3] = '>';
+            BirdChars[1, 0] = '{';
+            BirdChars[1, 1] = '<';
+            BirdChars[1, 2] = 'D';
+            BirdChars[1, 3] = ' ';
+            BirdChars[2, 0] = ' ';
+            BirdChars[2, 1] = '\"';
+            BirdChars[2, 2] = '\"';
+            BirdChars[2, 3] = ' ';
         }
-        
+        public static void TheBirdDied()
+        {
+            Alive = false;
+        }
         //  (@>  
         // {<D
         //  ""

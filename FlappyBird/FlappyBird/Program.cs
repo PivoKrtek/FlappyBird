@@ -11,13 +11,6 @@ namespace FlappyBird
         public static int WidhtOfGameWindow { get; set; }
         public static int LapNumber { get; set; }
         public static int Points { get; set; }
-
-        public static GreenField Field1 { get; set; }
-        public static GreenField Field2 { get; set; }
-        public static GreenField Field3 { get; set; }
-        public static GreenField Field4 { get; set; }
-        public static GreenField Field5 { get; set; }
-
         static void Main(string[] args)
         {
             Console.SetWindowSize(95, 28);
@@ -25,31 +18,19 @@ namespace FlappyBird
             HeightOfGameWindow = 25;
             WidhtOfGameWindow = 94;
             bool playAgain = true;
-            GreenField.StartYPositionForWhole = 3;
-            GreenField.HeightOfWholeInField = 6;
-            GreenField.WidthSizeOfField = 8;
-            GreenField.NumberOfPositionBetweenEachField = 22;
-            GreenField.StartPositonFirstField = 40;
+            GreenField.SetValuesGreenField();
+            
             while (playAgain)
             {
                 playAgain = false;
                 LapNumber = 0;
                 Points = 0;
                 Bird.Alive = true;
-                Bird.XStartPosition = 12;
                 Bird.YStartPosition = 10;
-                Screen.XHere = 0;
-                                
-                Field1 = new GreenField(GreenField.StartPositonFirstField);
-                Field2 = new GreenField(GreenField.StartPositonFirstField + GreenField.NumberOfPositionBetweenEachField);
-                Field3 = new GreenField(GreenField.StartPositonFirstField + GreenField.NumberOfPositionBetweenEachField * 2);
-                Field4 = new GreenField(GreenField.StartPositonFirstField + GreenField.NumberOfPositionBetweenEachField * 3);
-                Field5 = new GreenField(GreenField.StartPositonFirstField + GreenField.NumberOfPositionBetweenEachField * 4);
-                Bird.CreateBird();
-                Screen.StringsMakingScreen = new string[Program.HeightOfGameWindow, Program.WidhtOfGameWindow];
-
+                GreenField.CreateGreenFields(HeightOfGameWindow);
+                Screen.CharsMakingScreen = new char[HeightOfGameWindow, WidhtOfGameWindow];
                 Screen.StartGame();
-                
+
                 while (Bird.Alive)
                 {
                     LapNumber++;
@@ -58,24 +39,36 @@ namespace FlappyBird
                     if (LapNumber < 1000)
                     {
                         if (LapNumber % 2 == 0)
-                        { GreenField.SetStartPositionOneStepBack(); }
+                        {
+                            GreenField.SetStartPositionOneStepBack(HeightOfGameWindow);
+                            if (GreenField.IfBirdHasPassedTheField(Bird.XStartPosition))
+                            { Points++; }
+                        }
                     }
                     else if (LapNumber > 1000 && LapNumber < 2000)
                     {
                         if (LapNumber % 2 == 0 || LapNumber % 3 == 0)
-                        { GreenField.SetStartPositionOneStepBack(); }
+                        {
+                            GreenField.SetStartPositionOneStepBack(HeightOfGameWindow);
+                            if (GreenField.IfBirdHasPassedTheField(Bird.XStartPosition))
+                            { Points++; }
+                        }
                     }
                     else
-                    { GreenField.SetStartPositionOneStepBack(); }
+                    {
+                        GreenField.SetStartPositionOneStepBack(HeightOfGameWindow);
+                        if (GreenField.IfBirdHasPassedTheField(Bird.XStartPosition))
+                        { Points++; }
+                    }
 
                     if (LapNumber % 2 == 0)
                     {
                         Bird.YStartPosition++;
                         if (Bird.YStartPosition + Bird.BirdSizeY > 26)
-                        { Bird.Alive = false; }
+                        { Bird.TheBirdDied(); }
                     }
                     if (Bird.YStartPosition < 0)
-                    { Bird.Alive = false; }
+                    { Bird.TheBirdDied(); }
                     if (Console.KeyAvailable)
                     {
                         switch (Console.ReadKey(true).Key)
@@ -92,52 +85,48 @@ namespace FlappyBird
                                 break;
                             case ConsoleKey.Escape:
                                 {
-                                    Bird.Alive = false;
+                                    Bird.TheBirdDied();
                                 }
                                 break;
                             default:
                                 break;
                         }
                     }
-
-                    Screen.CreateScreen();
-                    Screen.PrintScreen();
-                   
+                    Screen.CreateScreen(HeightOfGameWindow, WidhtOfGameWindow, GreenField.ListOfGreenFields, GreenField.WidthSizeOfField);
+                    Screen.PutBirdOnScreen(Bird.XStartPosition, Bird.YStartPosition, Bird.BirdChars, Bird.BirdSizeX, Bird.BirdSizeY);
+                    Screen.PrintScreen(HeightOfGameWindow, WidhtOfGameWindow);
                     System.Threading.Thread.Sleep(15);
                 }
-                
                 Console.SetCursorPosition(0, 0);
                 Screen.EndGame();
                 Highscore.OpenAndPrintHighscore();
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\t\t\t\tYou got {Program.Points} points.\n");
-                int maybeHighscore = Highscore.SeeIfHighscore();
+                Screen.PrintPoints(Points);
+
+                int maybeHighscore = Highscore.SeeIfHighscore(Points);
                 if (maybeHighscore < 11)
                 {
-                    Console.WriteLine("\t\t\t\tCongratulations, you made it to the list!");
+                    Screen.YouMadeItToList();
                     Highscore.PutHighScoreInList(maybeHighscore);
                     Highscore.PutHighScoreInFile();
                     Highscore.OpenAndPrintHighscore();
                 }
                 else
                 {
-                    Console.WriteLine("\t\t\t\tBetter luck next time!\n\n");
+                    Screen.BetterLuck();
                 }
+
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("\t\t\t\tWant to play again?");
-                Console.WriteLine("\t\t\t\t[1] --> YES!");
-                Console.WriteLine("\t\t\t\t[0] --> NO.");
-                Console.Write("\t\t\t\t");
+                Screen.PlayAgain();
                 int choice = InputNumber(0, 1);
                 if (choice == 1)
                 { playAgain = true; }
                 Console.Clear();
-                                
+
             }
             Console.Clear();
             Console.ReadLine();
         }
-
         public static int InputNumber(int minimumchoice, int maxchoice)
         {
             bool ok;
@@ -154,6 +143,7 @@ namespace FlappyBird
             }
             return inputNumber;
         }
+        
 
     }
 }

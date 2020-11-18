@@ -1,107 +1,74 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FlappyBird
 {
     class Screen
     {
-        public static string[,] StringsMakingScreen { get; set; }
+        public static char[,] CharsMakingScreen { get; set; }
         public static int XHere { get; set; }
-        public static int BirdHere { get; set; }
-        public static int FieldHere { get; set; }
-               
-        public static void CreateScreen()
+                      
+        public static void CreateScreen(int heightWindow, int widhtWindow, List<GreenField> listOfFields, int widthSizeField) 
         {
-            for (int y = 0; y < Program.HeightOfGameWindow; y++)
+            for (int y = 0; y < heightWindow; y++)
             {
-                for (int x = 0; x < Program.WidhtOfGameWindow; x++)
+                for (int x = 0; x < widhtWindow; x++)
                 {
                     XHere = 0;
-                    BirdHere = 0;
-                    FieldHere = 0;
-                    if (x >= Program.Field1.XStartPosition && x < Program.Field1.XStartPosition + GreenField.WidthSizeOfField)
+                    
+                    for (int i = 0; i < listOfFields.Count; i++)
                     {
-                        FieldHere++;
-
-                        StringsMakingScreen[y, x] = Program.Field1.Field[y, x - Program.Field1.XStartPosition];
-                        if (Program.Field1.Field[y, x - Program.Field1.XStartPosition] == "\u2736")
-                        { XHere++; }
-                    }
-                    else if (x >= Program.Field2.XStartPosition && x < Program.Field2.XStartPosition + GreenField.WidthSizeOfField)
-                    {
-                        FieldHere++;
-
-                        StringsMakingScreen[y, x] = Program.Field2.Field[y, x - Program.Field2.XStartPosition];
-                        if (Program.Field2.Field[y, x - Program.Field2.XStartPosition] == "\u2736")
-                        { XHere++; }
-                    }
-                    else if (x >= Program.Field3.XStartPosition && x < Program.Field3.XStartPosition + GreenField.WidthSizeOfField)
-                    {
-                        FieldHere++;
-
-                        StringsMakingScreen[y, x] = Program.Field3.Field[y, x - Program.Field3.XStartPosition];
-                        if (Program.Field3.Field[y, x - Program.Field3.XStartPosition] == "\u2736")
-                        { XHere++; }
-                    }
-                    else if (x >= Program.Field4.XStartPosition && x < Program.Field4.XStartPosition + GreenField.WidthSizeOfField)
-                    {
-                        FieldHere++;
-
-                        StringsMakingScreen[y, x] = Program.Field4.Field[y, x - Program.Field4.XStartPosition];
-                        if (Program.Field4.Field[y, x - Program.Field4.XStartPosition] == "\u2736")
-                        { XHere++; }
-                    }
-                    else if (x >= Program.Field5.XStartPosition && x < Program.Field5.XStartPosition + GreenField.WidthSizeOfField)
-                    {
-                        FieldHere++;
-
-                        StringsMakingScreen[y, x] = Program.Field5.Field[y, x - Program.Field5.XStartPosition];
-                        if (Program.Field5.Field[y, x - Program.Field5.XStartPosition] == "\u2736")
-                        { XHere++; }
-                    }
-                    if (x >= Bird.XStartPosition && x < Bird.XStartPosition + Bird.BirdSizeX && y >= Bird.YStartPosition && y < Bird.YStartPosition + Bird.BirdSizeY)
-                    {
-                        if (Bird.BirdStrings[y - Bird.YStartPosition, x - Bird.XStartPosition] != " " && XHere > 0 && Bird.Alive)
-                        { 
-                            Bird.Alive = false; 
-                        }
-                        else if (Bird.BirdStrings[y - Bird.YStartPosition, x - Bird.XStartPosition] != " ")
+                        if (x >= listOfFields[i].XStartPosition && x < listOfFields[i].XStartPosition + widthSizeField)
                         {
-                            BirdHere++;
-                            StringsMakingScreen[y, x] = Bird.BirdStrings[y - Bird.YStartPosition, x - Bird.XStartPosition];
+                            
+                            CharsMakingScreen[y, x] = listOfFields[i].Field[y, x - listOfFields[i].XStartPosition];
+                            if (listOfFields[i].Field[y, x - listOfFields[i].XStartPosition] == '\u2736')
+                            { XHere++; }
                         }
                     }
-
-                    if (BirdHere < 1 && XHere < 1 && FieldHere < 1)
+                    if (XHere < 1)
                     {
-                        StringsMakingScreen[y, x] = " ";
+                        CharsMakingScreen[y, x] = ' ';
                     }
                 }
-
             }
-
         }
-        public static void PrintScreen()
+        public static void PutBirdOnScreen(int birdXStartPosition, int birdYPosition, char[,] bird, int birdSizeX, int birdSizeY)
         {
-            for (int y = 0; y < Program.HeightOfGameWindow; y++)
+            for (int y = 0; y < birdSizeY; y++)
             {
-                for (int x = 0; x < Program.WidhtOfGameWindow; x++)
+                for (int x = 0; x < birdSizeX; x++)
                 {
-                    if (StringsMakingScreen[y, x] == "\u2736")
+                    if (bird[y, x] != ' ' && CharsMakingScreen[birdYPosition + y, birdXStartPosition + x] != '\u2736')
+                    { CharsMakingScreen[birdYPosition + y, birdXStartPosition + x] = bird[y, x]; }
+                    else if (CharsMakingScreen[birdYPosition + y, birdXStartPosition + x] == '\u2736')
+                    { Bird.TheBirdDied(); }
+                }
+            }
+        }
+
+        public static void PrintScreen(int heightOfWindow, int widhtOfWindow)
+        {
+            for (int y = 0; y < heightOfWindow; y++)
+            {
+                for (int x = 0; x < widhtOfWindow; x++)
+                {
+                    if (CharsMakingScreen[y, x] == '\u2736')
                     { Console.ForegroundColor = ConsoleColor.Green; }
-                    else if (StringsMakingScreen[y, x] == "@")
+                    else if (CharsMakingScreen[y, x] == '@')
                     {
                         if (!Bird.Alive)
                         {
-                            StringsMakingScreen[y, x] = "+";
+                            CharsMakingScreen[y, x] = '+';
                             Console.ForegroundColor = ConsoleColor.Red;
                         }
                         else { Console.ForegroundColor = ConsoleColor.Blue; }
                     }
-                    else if (StringsMakingScreen[y, x] == ">" || StringsMakingScreen[y, x] == "\"")
+                    else if (CharsMakingScreen[y, x] == '>' || CharsMakingScreen[y, x] == '\"')
                     { Console.ForegroundColor = ConsoleColor.Red; }
-                    else if (StringsMakingScreen[y, x] != " ")
+                    else if (CharsMakingScreen[y, x] != ' ')
                     { Console.ForegroundColor = ConsoleColor.Yellow; }
-                    Console.Write(StringsMakingScreen[y, x]);
+                    Console.Write(CharsMakingScreen[y, x]);
 
                 }
                 Console.WriteLine();
@@ -111,7 +78,25 @@ namespace FlappyBird
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine($"\tPOINTS: {Program.Points}");
         }
-        
+
+        public static void PlayAgain()
+        {
+            Console.WriteLine("\t\t\t\tWant to play again?");
+            Console.WriteLine("\t\t\t\t[1] --> YES!");
+            Console.WriteLine("\t\t\t\t[0] --> NO.");
+            Console.Write("\t\t\t\t");
+        }
+
+        public static void BetterLuck()
+        {
+            Console.WriteLine("\t\t\t\tBetter luck next time!\n\n");
+        }
+
+        public static void YouMadeItToList()
+        {
+            Console.WriteLine("\t\t\t\tCongratulations, you made it to the list!");
+        }
+
         public static void StartGame()
         {
         Console.WriteLine("\n\n\n\n\n");
@@ -140,6 +125,10 @@ namespace FlappyBird
             Console.WriteLine("\n\n\n");
             Console.WriteLine("                               PRESS ENTER to see HIGHSCORE");
             Console.ReadLine();
+        }
+        public static void PrintPoints(int points)
+        {
+            Console.WriteLine($"\t\t\t\tYou got {points} points.\n");
         }
     }
 }
